@@ -1,13 +1,10 @@
 package homework;
 
-import java.util.AbstractMap;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class CustomerService {
 
-    private TreeMap<Customer, String> treeMap = new TreeMap<>(Comparator.comparing(Customer::getScores));
+    private NavigableMap<Customer, String> treeMap = new TreeMap<>(Comparator.comparing(Customer::getScores));
 
     public Map.Entry<Customer, String> getSmallest() {
         // Возможно, чтобы реализовать этот метод, потребуется посмотреть как Map.Entry сделан в jdk
