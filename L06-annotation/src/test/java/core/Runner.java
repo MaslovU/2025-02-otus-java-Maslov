@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import ru.otus.annotations.After;
 import ru.otus.annotations.Before;
 import ru.otus.annotations.Test;
-import tests.MainTest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,7 +21,7 @@ public class Runner {
         int unsuccessfulTestCounter = 0;
         int successfulTestCounter = 0;
 
-        for (var clazz: classes) {
+        for (var clazz : classes) {
             var methods = clazz.getMethods();
 
             Method before = null;
@@ -43,7 +42,7 @@ public class Runner {
                 }
             }
 
-            for (var method: testsMethods) {
+            for (var method : testsMethods) {
                 var mainTest = clazz.getConstructor().newInstance();
                 if (!isNull(before)) {
                     Method myMethod = clazz.getMethod(before.getName());
