@@ -4,8 +4,6 @@ dependencies {
     implementation ("ch.qos.logback:logback-classic")
 }
 
-
-
 tasks.test {
     useJUnitPlatform()
 }

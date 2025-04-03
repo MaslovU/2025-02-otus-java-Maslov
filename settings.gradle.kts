@@ -24,6 +24,3 @@ pluginManagement {
         id("com.diffplug.spotless") version spotless
     }
 }
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
