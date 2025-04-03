@@ -1,6 +1,7 @@
 rootProject.name = "otusJava"
 include("L01-gradle")
 include("L04-generics")
+include("L06-annotation")
 
 pluginManagement {
     val jgitver: String by settings
@@ -22,4 +23,7 @@ pluginManagement {
         id("name.remal.sonarlint") version sonarlint
         id("com.diffplug.spotless") version spotless
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
