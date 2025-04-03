@@ -15,7 +15,7 @@ import static java.util.Objects.isNull;
 
 public class Runner {
 
-    Logger log = LoggerFactory.getLogger(Logger.class);
+    private Logger log = LoggerFactory.getLogger(Logger.class);
 
     public void run(List<Class<?>> classes) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         int unsuccessfulTestCounter = 0;
@@ -64,6 +64,7 @@ public class Runner {
                 }
             }
         }
-        log.info("Was run tests. successful: {} unsuccessful: {}", successfulTestCounter, unsuccessfulTestCounter);
+        var total = successfulTestCounter + unsuccessfulTestCounter;
+        log.info("Was run {} tests. successful: {} unsuccessful: {}", total, successfulTestCounter, unsuccessfulTestCounter);
     }
 }

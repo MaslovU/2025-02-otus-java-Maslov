@@ -6,8 +6,6 @@ import ru.otus.annotations.Test;
 
 public class NewMainTest {
 
-    int count = 0;
-
     @Before
     public void init() {
         System.out.println("My second init method");
