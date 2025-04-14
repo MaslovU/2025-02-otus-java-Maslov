@@ -1,36 +1,38 @@
 package core;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.annotations.After;
 import ru.otus.annotations.Before;
 import ru.otus.annotations.Test;
+import ru.otus.exceptions.BeforeException;
+import ru.otus.exceptions.GeneralOtusException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.isNull;
+public class Runner implements LifecycleMethodExecutionExceptionHandler {
 
-public class Runner {
+    private static final Logger log = LoggerFactory.getLogger(Runner.class);
 
-    private Logger log = LoggerFactory.getLogger(Logger.class);
-
-    public void run(List<Class<?>> classes) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public TestResult run(List<Class<?>> classes) throws GeneralOtusException {
         int unsuccessfulTestCounter = 0;
         int successfulTestCounter = 0;
 
         for (var clazz : classes) {
             var methods = clazz.getMethods();
 
-            Method before = null;
-            Method after = null;
+            List<Method> beforeList = new ArrayList<>();
+            List<Method> afterList = new ArrayList<>();
             List<Method> testsMethods = new ArrayList<>();
 
             for (var method : methods) {
                 if (method.isAnnotationPresent(Before.class)) {
-                    before = method;
+                    beforeList.add(method);
                 }
 
                 if (method.isAnnotationPresent(Test.class)) {
@@ -38,33 +40,42 @@ public class Runner {
                 }
 
                 if (method.isAnnotationPresent(After.class)) {
-                    after = method;
+                    afterList.add(method);
                 }
             }
 
-            for (var method : testsMethods) {
-                var mainTest = clazz.getConstructor().newInstance();
-                if (!isNull(before)) {
-                    Method myMethod = clazz.getMethod(before.getName());
-                    myMethod.invoke(mainTest);
-                }
+            try {
+                for (var method : testsMethods) {
+                    var mainTest = clazz.getConstructor().newInstance();
+                    for (var before : beforeList) {
+                        try {
+                            Method myMethod = clazz.getMethod(before.getName());
+                            myMethod.invoke(mainTest);
+                        } catch (InvocationTargetException e) {
+                            throw new BeforeException("Got exception for Before method in class: " + clazz.getName());
+                        }
+                    }
 
-                var testMethod = clazz.getMethod(method.getName());
-                try {
-                    testMethod.invoke(mainTest);
-                    successfulTestCounter++;
-                } catch (InvocationTargetException e) {
-                    unsuccessfulTestCounter++;
-                }
+                    var testMethod = clazz.getMethod(method.getName());
+                    try {
+                        testMethod.invoke(mainTest);
+                        successfulTestCounter++;
+                    } catch (InvocationTargetException e) {
+                        unsuccessfulTestCounter++;
+                    }
 
-
-                if (!isNull(after)) {
-                    Method myMethod = clazz.getMethod(after.getName());
-                    myMethod.invoke(mainTest);
+                    for (var after : afterList) {
+                        Method myMethod = clazz.getMethod(after.getName());
+                        myMethod.invoke(mainTest);
+                    }
                 }
+            }  catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException ex) {
+                throw new GeneralOtusException(ex);
+            } catch (BeforeException ex) {
+                log.info(ex.getMessage());
             }
         }
         var total = successfulTestCounter + unsuccessfulTestCounter;
-        log.info("Was run {} tests. successful: {} unsuccessful: {}", total, successfulTestCounter, unsuccessfulTestCounter);
+    return new TestResult(total, successfulTestCounter, unsuccessfulTestCounter);
     }
 }

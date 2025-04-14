@@ -9,6 +9,7 @@ public class MainTest {
     @Before
     public void init() {
         System.out.println("My init method");
+        throw new RuntimeException("error");
     }
 
     @After
