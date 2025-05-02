@@ -1,0 +1,17 @@
+before optimisation:
+heap: 256 spend msec:220796, sec:220
+heap: 512 spend msec:220600, sec:220
+heap: 1024 spend msec:216025, sec:216 оптимальное значение heap 1024
+heap: 2048 spend msec:221060, sec:221
+heap: 4096 spend msec:219703, sec:219
+heap: 8192 spend msec:218442, sec:218
+heap: 16384 spend msec:226491, sec:226
+
+after optimisation:
+heap: 256 spend msec:192272, sec:192 оптимальное значение heap 256
+heap: 512 spend msec:198560, sec:198
+heap: 1024 spend msec:210899, sec:210
+heap: 2048 spend msec:206780, sec:206
+heap: 4096 spend msec:201214, sec:201
+heap: 8192 spend msec:202656, sec:202
+heap: 16384 spend msec:224322, sec:224
