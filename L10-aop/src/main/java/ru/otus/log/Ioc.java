@@ -32,8 +32,8 @@ public class Ioc {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             logger.info("invoking method:{}", method);
-            var logMethod = myClass.getClass().getMethod(method.getName(), method.getParameterTypes());
-            if (nonNull(logMethod.getAnnotation(Log.class))) {
+            var methodFromClass = myClass.getClass().getMethod(method.getName(), method.getParameterTypes());
+            if (nonNull(methodFromClass.getAnnotation(Log.class))) {
                 System.out.println("invoking method: " + method.getName() + " params: " + Arrays.toString(args));
             }
             return method.invoke(myClass, args);
