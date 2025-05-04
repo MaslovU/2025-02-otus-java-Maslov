@@ -1,7 +1,6 @@
 package ru.otus;
 
 import ru.otus.log.Ioc;
-import ru.otus.log.MyTestLogging;
 import ru.otus.log.MyTestLoggingInterface;
 
 public class Main {
