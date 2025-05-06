@@ -23,7 +23,7 @@ public class Ioc {
         return (MyTestLoggingInterface) Proxy.newProxyInstance(Ioc.class.getClassLoader(), new Class<?>[]{MyTestLoggingInterface.class}, handler);
     }
 
-    static class DemoInvocationHandler<T extends MyTestLoggingInterface> implements InvocationHandler {
+    static class DemoInvocationHandler<T> implements InvocationHandler {
         private final T myClass;
         private final Method[] methodsList;
 
