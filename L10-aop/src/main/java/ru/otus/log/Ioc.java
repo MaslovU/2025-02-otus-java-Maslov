@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Objects.nonNull;
 
@@ -18,23 +19,27 @@ public class Ioc {
 
     public static MyTestLoggingInterface createMyClass() {
 
-        InvocationHandler handler = new DemoInvocationHandler(new MyTestLogging());
+        InvocationHandler handler = new DemoInvocationHandler<>(new MyTestLogging());
         return (MyTestLoggingInterface) Proxy.newProxyInstance(Ioc.class.getClassLoader(), new Class<?>[]{MyTestLoggingInterface.class}, handler);
     }
 
-    static class DemoInvocationHandler implements InvocationHandler {
-        private final MyTestLogging myClass;
+    static class DemoInvocationHandler<T extends MyTestLoggingInterface> implements InvocationHandler {
+        private final T myClass;
+        private final Method[] methodsList;
 
-        DemoInvocationHandler(MyTestLogging myClass) {
-            this.myClass = myClass;
+        DemoInvocationHandler(T t) {
+            this.myClass = t;
+            this.methodsList = myClass.getClass().getDeclaredMethods();
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             logger.info("invoking method:{}", method);
-            var methodFromClass = myClass.getClass().getMethod(method.getName(), method.getParameterTypes());
-            if (nonNull(methodFromClass.getAnnotation(Log.class))) {
-                System.out.println("invoking method: " + method.getName() + " params: " + Arrays.toString(args));
+            for (Method value : methodsList) {
+                if (Arrays.equals(method.getParameterTypes(), value.getParameterTypes())
+                        && nonNull(value.getAnnotation(Log.class))) {
+                    System.out.println("invoking method: " + method.getName() + " params: " + Arrays.toString(args));
+                }
             }
             return method.invoke(myClass, args);
         }
