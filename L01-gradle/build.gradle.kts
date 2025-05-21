@@ -22,3 +22,5 @@ tasks {
         dependsOn(shadowJar)
     }
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
