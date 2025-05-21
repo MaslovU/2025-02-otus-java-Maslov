@@ -1,12 +1,12 @@
 package ru.otus;
 
 import ru.otus.atm.AmountByBanknotes;
-import ru.otus.atm.Atm;
+import ru.otus.atm.AtmRub;
 import ru.otus.exception.BigRequestSumException;
 
 public class Main {
     public static void main(String[] args) {
-        Atm atm = new Atm();
+        AtmRub atm = new AtmRub();
         AmountByBanknotes sum;
 
         AmountByBanknotes byBanknotes = AmountByBanknotes.builder().one(1).five(3).ten(2).build();

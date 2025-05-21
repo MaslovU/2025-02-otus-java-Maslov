@@ -2,17 +2,17 @@ package ru.otus.atm;
 
 public class Banknote {
 
-    private int nominal;
+    private Nominal nominal;
 
-    public Banknote(int nominal) {
+    public Banknote(Nominal nominal) {
         this.nominal = nominal;
     }
 
     public int getNominal() {
-        return nominal;
+        return nominal.getValue();
     }
 
-    public void setNominal(int nominal) {
+    public void setNominal(Nominal nominal) {
         this.nominal = nominal;
     }
 }
