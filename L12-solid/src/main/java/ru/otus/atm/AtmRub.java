@@ -2,6 +2,8 @@ package ru.otus.atm;
 
 import ru.otus.exception.BigRequestSumException;
 
+import java.util.List;
+
 import static java.lang.Math.min;
 import static ru.otus.atm.Nominal.*;
 
@@ -16,17 +18,17 @@ public class AtmRub implements Atm{
     Banknote five = new Banknote(FIVE);
     Banknote ten = new Banknote(TEN);
 
-    public void putAmount(AmountByBanknotes banknotes) {
-        numberOneBanknotesInAtm = banknotes.getOne();
-        numberFiveBanknotesInAtm = banknotes.getFive();
-        numberTenBanknotesInAtm = banknotes.getTen();
+    public void putAmount(List<AmountByBanknotes> banknotes) {
+        numberOneBanknotesInAtm = banknotes.get(0).getAmount();
+        numberFiveBanknotesInAtm = banknotes.get(1).getAmount();
+        numberTenBanknotesInAtm = banknotes.get(2).getAmount();
 
         totalAmount = numberOneBanknotesInAtm * one.getNominal()
                 + numberFiveBanknotesInAtm * five.getNominal()
                 + numberTenBanknotesInAtm * ten.getNominal();
     }
 
-    public AmountByBanknotes getRequiredSum(int reqSum) throws BigRequestSumException {
+    public List<AmountByBanknotes> getRequiredSum(int reqSum) throws BigRequestSumException {
         var tenBanknotes = 0;
         var fiveBanknotes = 0;
         var oneBanknotes = 0;
@@ -60,7 +62,11 @@ public class AtmRub implements Atm{
             totalAmount = totalAmount - reqSum;
         }
 
-        return AmountByBanknotes.builder().one(oneBanknotes).five(fiveBanknotes).ten(tenBanknotes).build();
+        var oneAmount = AmountByBanknotes.builder().amount(oneBanknotes).build();
+        var fiveAmount = AmountByBanknotes.builder().amount(fiveBanknotes).build();
+        var tenAmount = AmountByBanknotes.builder().amount(tenBanknotes).build();
+
+        return List.of(oneAmount, fiveAmount, tenAmount);
     }
 
     public int getTotal() {

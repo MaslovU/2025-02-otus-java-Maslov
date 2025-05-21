@@ -2,9 +2,11 @@ package ru.otus.atm;
 
 import ru.otus.exception.BigRequestSumException;
 
+import java.util.List;
+
 public interface Atm {
 
-    void putAmount(AmountByBanknotes banknotes);
-    AmountByBanknotes getRequiredSum(int reqSum) throws BigRequestSumException;
+    void putAmount(List<AmountByBanknotes> banknotes);
+    List<AmountByBanknotes> getRequiredSum(int reqSum) throws BigRequestSumException;
     int getTotal();
 }

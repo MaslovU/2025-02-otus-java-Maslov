@@ -9,14 +9,10 @@ import lombok.Setter;
 @Builder
 public class AmountByBanknotes {
 
-    private int one;
-    private int five;
-    private int ten;
+    private int amount;
 
     @Override
     public String toString() {
-        return "oneRubs is: " + one +
-                ", fiveRubs is: " + five +
-                ", tenRubs is: " + ten;
+        return "amount is: " + amount;
     }
 }
