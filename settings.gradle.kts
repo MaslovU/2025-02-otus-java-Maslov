@@ -4,6 +4,7 @@ include("L04-generics")
 include("L06-annotation")
 include("L08-gc")
 include("L10-aop")
+include("L12-solid")
 
 pluginManagement {
     val jgitver: String by settings
