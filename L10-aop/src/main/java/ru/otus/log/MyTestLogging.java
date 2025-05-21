@@ -8,7 +8,7 @@ public class MyTestLogging implements MyTestLoggingInterface {
     }
 
     @Override
-    @Log()
+    @Log
     public void calculation(int param1, int param2) {
         System.out.println("This is two params");
     }
