@@ -2,6 +2,7 @@ package ru.otus.atm;
 
 import ru.otus.exception.BigRequestSumException;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.Math.min;
@@ -14,30 +15,29 @@ public class AtmRub implements Atm{
     private int numberFiveBanknotesInAtm;
     private int numberTenBanknotesInAtm;
 
-    Banknote one = new Banknote(ONE);
-    Banknote five = new Banknote(FIVE);
-    Banknote ten = new Banknote(TEN);
 
-    public void putAmount(List<AmountByBanknotes> banknotes) {
-        numberOneBanknotesInAtm = banknotes.get(0).getAmount();
-        numberFiveBanknotesInAtm = banknotes.get(1).getAmount();
-        numberTenBanknotesInAtm = banknotes.get(2).getAmount();
+    public void putAmount(List<Banknote> banknoteList) {
+        numberOneBanknotesInAtm = banknoteList.get(0).getAmountByBanknotes();
+        numberFiveBanknotesInAtm = banknoteList.get(1).getAmountByBanknotes();
+        numberTenBanknotesInAtm = banknoteList.get(2).getAmountByBanknotes();
 
-        totalAmount = numberOneBanknotesInAtm * one.getNominal()
-                + numberFiveBanknotesInAtm * five.getNominal()
-                + numberTenBanknotesInAtm * ten.getNominal();
+        totalAmount = numberOneBanknotesInAtm * banknoteList.get(0).getNominal()
+                + numberFiveBanknotesInAtm * banknoteList.get(1).getNominal()
+                + numberTenBanknotesInAtm * banknoteList.get(2).getNominal();
     }
 
-    public List<AmountByBanknotes> getRequiredSum(int reqSum) throws BigRequestSumException {
+    public List<Banknote> getRequiredSum(int reqSum, List<Banknote> banknoteList) throws BigRequestSumException {
         var tenBanknotes = 0;
         var fiveBanknotes = 0;
         var oneBanknotes = 0;
         var reqSumForClient = reqSum;
+        List<Banknote> banknotesListForCache = new LinkedList<>();
 
         if (reqSumForClient > totalAmount) {
             throw new BigRequestSumException("Req sum is veri big. Try get less sum");
         }
 
+        var ten = banknoteList.get(2);
         var numberTenBanknotes = reqSumForClient / ten.getNominal();
         tenBanknotes = getBanknotes(numberTenBanknotes, numberOneBanknotesInAtm);
         if (tenBanknotes == numberTenBanknotesInAtm) {
@@ -45,6 +45,7 @@ public class AtmRub implements Atm{
         }
         reqSumForClient = reqSumForClient - tenBanknotes * ten.getNominal();
 
+        var five = banknoteList.get(1);
         var numberFiveBanknotesForCache = reqSumForClient / five.getNominal();
         fiveBanknotes = getBanknotes(numberFiveBanknotesForCache, numberFiveBanknotesInAtm);
         if (fiveBanknotes == numberFiveBanknotesInAtm) {
@@ -52,6 +53,7 @@ public class AtmRub implements Atm{
         }
         reqSumForClient = reqSumForClient - fiveBanknotes * five.getNominal();
 
+        var one = banknoteList.get(0);
         var numberOneBanknotesForCache = reqSumForClient / one.getNominal();
         if (numberOneBanknotesForCache > numberOneBanknotesInAtm) {
             throw new BigRequestSumException("Req sum is veri big. There are not enough banknotes. Atm has ten: "
@@ -62,11 +64,11 @@ public class AtmRub implements Atm{
             totalAmount = totalAmount - reqSum;
         }
 
-        var oneAmount = AmountByBanknotes.builder().amount(oneBanknotes).build();
-        var fiveAmount = AmountByBanknotes.builder().amount(fiveBanknotes).build();
-        var tenAmount = AmountByBanknotes.builder().amount(tenBanknotes).build();
+        banknotesListForCache.add(Banknote.builder().nominal(ONE).amountByBanknotes(oneBanknotes).build());
+        banknotesListForCache.add(Banknote.builder().nominal(FIVE).amountByBanknotes(fiveBanknotes).build());
+        banknotesListForCache.add(Banknote.builder().nominal(TEN).amountByBanknotes(tenBanknotes).build());
 
-        return List.of(oneAmount, fiveAmount, tenAmount);
+        return banknotesListForCache;
     }
 
     public int getTotal() {

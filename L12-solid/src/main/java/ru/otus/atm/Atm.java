@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Atm {
 
-    void putAmount(List<AmountByBanknotes> banknotes);
-    List<AmountByBanknotes> getRequiredSum(int reqSum) throws BigRequestSumException;
+    void putAmount(List<Banknote> banknoteList);
+    List<Banknote> getRequiredSum(int reqSum, List<Banknote> banknoteList) throws BigRequestSumException;
     int getTotal();
 }

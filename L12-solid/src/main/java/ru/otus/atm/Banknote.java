@@ -1,18 +1,20 @@
 package ru.otus.atm;
 
+import lombok.*;
+
+@Setter
+@Builder
+@AllArgsConstructor
 public class Banknote {
 
     private Nominal nominal;
+    @Getter
+    private int amountByBanknotes;
 
-    public Banknote(Nominal nominal) {
-        this.nominal = nominal;
-    }
+    public Banknote() {}
 
     public int getNominal() {
         return nominal.getValue();
     }
 
-    public void setNominal(Nominal nominal) {
-        this.nominal = nominal;
-    }
 }
