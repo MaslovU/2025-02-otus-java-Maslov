@@ -17,8 +17,6 @@ public class Message {
     private final String field12;
     private final ObjectForMessage field13;
 
-    // todo: 1. Добавить поля field11 - field13 (для field13 используйте класс ObjectForMessage)
-
     private Message(
             long id,
             String field1,
@@ -139,7 +137,10 @@ public class Message {
                 + field7 + '\'' + ", field8='"
                 + field8 + '\'' + ", field9='"
                 + field9 + '\'' + ", field10='"
-                + field10 + '\'' + '}';
+                + field10 + '\'' + ", field11='"
+                + field11 + '\'' + ", field12='"
+                + field12 + '\'' + ", field13='"
+                + field13 + '\'' + '}';
     }
 
     public static class Builder {
