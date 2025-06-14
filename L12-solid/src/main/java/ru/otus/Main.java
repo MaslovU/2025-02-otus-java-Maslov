@@ -1,12 +1,10 @@
 package ru.otus;
 
-import ru.otus.atm.AmountByBanknotes;
 import ru.otus.atm.AtmRub;
 import ru.otus.atm.Banknote;
 import ru.otus.atm.Nominal;
 import ru.otus.exception.BigRequestSumException;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
@@ -18,17 +16,12 @@ public class Main {
         Banknote five = Banknote.builder().nominal(Nominal.FIVE).amountByBanknotes(2).build();
         Banknote ten = Banknote.builder().nominal(Nominal.TEN).amountByBanknotes(3).build();
 
-        List<Banknote> banknoteList = new LinkedList<>();
-        banknoteList.add(one);
-        banknoteList.add(five);
-        banknoteList.add(ten);
-
-        atm.putAmount(banknoteList);
+        atm.putAmount(one, five, ten);
 
         System.out.println("Atm has total sum: " + atm.getTotal());
 
         try {
-            sum = atm.getRequiredSum(23, banknoteList);
+            sum = atm.getRequiredSum(51, one, five, ten);
             System.out.println("Got banknotes: one rub " + sum.get(0).getAmountByBanknotes()
                     + ", five rubs " + sum.get(1).getAmountByBanknotes()
                     + ", ten rubs " + sum.get(2).getAmountByBanknotes());

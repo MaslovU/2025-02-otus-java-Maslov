@@ -15,21 +15,20 @@ public class AtmRub implements Atm{
     private int numberFiveBanknotesInAtm;
     private int numberTenBanknotesInAtm;
 
+    public void putAmount(Banknote one, Banknote five, Banknote ten) {
+        numberOneBanknotesInAtm = one.getAmountByBanknotes();
+        numberFiveBanknotesInAtm = five.getAmountByBanknotes();
+        numberTenBanknotesInAtm = ten.getAmountByBanknotes();
 
-    public void putAmount(List<Banknote> banknoteList) {
-        numberOneBanknotesInAtm = banknoteList.get(0).getAmountByBanknotes();
-        numberFiveBanknotesInAtm = banknoteList.get(1).getAmountByBanknotes();
-        numberTenBanknotesInAtm = banknoteList.get(2).getAmountByBanknotes();
-
-        totalAmount = numberOneBanknotesInAtm * banknoteList.get(0).getNominal()
-                + numberFiveBanknotesInAtm * banknoteList.get(1).getNominal()
-                + numberTenBanknotesInAtm * banknoteList.get(2).getNominal();
+        totalAmount = numberOneBanknotesInAtm * one.getNominal()
+                + numberFiveBanknotesInAtm * five.getNominal()
+                + numberTenBanknotesInAtm * ten.getNominal();
     }
 
-    public List<Banknote> getRequiredSum(int reqSum, List<Banknote> banknoteList) throws BigRequestSumException {
-        var tenBanknotes = 0;
-        var fiveBanknotes = 0;
-        var oneBanknotes = 0;
+    public List<Banknote> getRequiredSum(int reqSum, Banknote one, Banknote five, Banknote ten) throws BigRequestSumException {
+        var numbersOfTenBanknotes = 0;
+        var numbersOfFiveBanknotes = 0;
+        var numbersOfOneBanknotes = 0;
         var reqSumForClient = reqSum;
         List<Banknote> banknotesListForCache = new LinkedList<>();
 
@@ -37,36 +36,33 @@ public class AtmRub implements Atm{
             throw new BigRequestSumException("Req sum is veri big. Try get less sum");
         }
 
-        var ten = banknoteList.get(2);
         var numberTenBanknotes = reqSumForClient / ten.getNominal();
-        tenBanknotes = getBanknotes(numberTenBanknotes, numberOneBanknotesInAtm);
-        if (tenBanknotes == numberTenBanknotesInAtm) {
+        numbersOfTenBanknotes = getBanknotes(numberTenBanknotes, numberOneBanknotesInAtm);
+        if (numbersOfTenBanknotes == numberTenBanknotesInAtm) {
             numberTenBanknotesInAtm = 0;
         }
-        reqSumForClient = reqSumForClient - tenBanknotes * ten.getNominal();
+        reqSumForClient = reqSumForClient - numbersOfTenBanknotes * ten.getNominal();
 
-        var five = banknoteList.get(1);
         var numberFiveBanknotesForCache = reqSumForClient / five.getNominal();
-        fiveBanknotes = getBanknotes(numberFiveBanknotesForCache, numberFiveBanknotesInAtm);
-        if (fiveBanknotes == numberFiveBanknotesInAtm) {
+        numbersOfFiveBanknotes = getBanknotes(numberFiveBanknotesForCache, numberFiveBanknotesInAtm);
+        if (numbersOfFiveBanknotes == numberFiveBanknotesInAtm) {
             numberFiveBanknotesInAtm = 0;
         }
-        reqSumForClient = reqSumForClient - fiveBanknotes * five.getNominal();
+        reqSumForClient = reqSumForClient - numbersOfFiveBanknotes * five.getNominal();
 
-        var one = banknoteList.get(0);
         var numberOneBanknotesForCache = reqSumForClient / one.getNominal();
         if (numberOneBanknotesForCache > numberOneBanknotesInAtm) {
             throw new BigRequestSumException("Req sum is veri big. There are not enough banknotes. Atm has ten: "
                     + numberTenBanknotesInAtm + ", five: " + numberFiveBanknotesInAtm + ", one: " + numberOneBanknotesInAtm);
         } else {
-            oneBanknotes = numberOneBanknotesForCache;
-            numberOneBanknotesInAtm = numberOneBanknotesInAtm - oneBanknotes;
+            numbersOfOneBanknotes = numberOneBanknotesForCache;
+            numberOneBanknotesInAtm = numberOneBanknotesInAtm - numbersOfOneBanknotes;
             totalAmount = totalAmount - reqSum;
         }
 
-        banknotesListForCache.add(Banknote.builder().nominal(ONE).amountByBanknotes(oneBanknotes).build());
-        banknotesListForCache.add(Banknote.builder().nominal(FIVE).amountByBanknotes(fiveBanknotes).build());
-        banknotesListForCache.add(Banknote.builder().nominal(TEN).amountByBanknotes(tenBanknotes).build());
+        banknotesListForCache.add(Banknote.builder().nominal(ONE).amountByBanknotes(numbersOfOneBanknotes).build());
+        banknotesListForCache.add(Banknote.builder().nominal(FIVE).amountByBanknotes(numbersOfFiveBanknotes).build());
+        banknotesListForCache.add(Banknote.builder().nominal(TEN).amountByBanknotes(numbersOfTenBanknotes).build());
 
         return banknotesListForCache;
     }
