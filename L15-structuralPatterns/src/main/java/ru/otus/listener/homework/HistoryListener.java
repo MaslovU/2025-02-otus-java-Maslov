@@ -9,17 +9,15 @@ import java.util.Optional;
 
 public class HistoryListener implements Listener, HistoryReader {
 
-    Map<Long, Message> messageMap = new HashMap<>();
+    private final Map<Long, Message> messageMap = new HashMap<>();
 
     @Override
-    public void onUpdated(Message msg)
-    {
-        messageMap.put(msg.getId(), msg);
+    public void onUpdated(Message msg) {
+        messageMap.put(msg.getId(), Message.copyMessage(msg));
     }
 
     @Override
-    public Optional<Message> findMessageById(long id)
-    {
+    public Optional<Message> findMessageById(long id) {
         return Optional.ofNullable(messageMap.get(id));
     }
 }
