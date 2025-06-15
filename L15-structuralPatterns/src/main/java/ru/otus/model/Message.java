@@ -48,8 +48,7 @@ public class Message {
         this.field13 = field13;
     }
 
-    public static Message copyMessage(Message message)
-    {
+    public static Message copyMessage(Message message) {
         return new Builder(message.getId())
                 .field1(message.getField1())
                 .field2(message.getField2())
