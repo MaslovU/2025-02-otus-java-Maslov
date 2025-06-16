@@ -28,8 +28,9 @@ public class ObjectForMessage {
 
         if (nonNull(objectForMessage) && nonNull(objectForMessage.getData())) {
             cloneableObject.setData(List.copyOf(objectForMessage.getData()));
+            return cloneableObject;
         }
 
-        return cloneableObject;
+        return null;
     }
 }
