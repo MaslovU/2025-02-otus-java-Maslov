@@ -1,4 +1,4 @@
-package listener.homework;
+package ru.otus.listener.homework;
 
 import org.junit.jupiter.api.Test;
 import ru.otus.listener.homework.HistoryListener;

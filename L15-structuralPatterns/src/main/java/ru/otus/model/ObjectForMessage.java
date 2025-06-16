@@ -2,6 +2,8 @@ package ru.otus.model;
 
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 public class ObjectForMessage {
 
     private List<String> data;
@@ -24,7 +26,7 @@ public class ObjectForMessage {
     public static ObjectForMessage cloneObject(ObjectForMessage objectForMessage) {
         ObjectForMessage cloneableObject = new ObjectForMessage();
 
-        if (objectForMessage.getData() != null) {
+        if (nonNull(objectForMessage) && nonNull(objectForMessage.getData())) {
             cloneableObject.setData(List.copyOf(objectForMessage.getData()));
         }
 
