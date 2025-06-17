@@ -2,8 +2,10 @@ package ru.otus.atm;
 
 import ru.otus.exception.BigRequestSumException;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Math.min;
 import static ru.otus.atm.Nominal.*;
@@ -26,9 +28,8 @@ public class AtmRub implements Atm{
     }
 
     public List<Banknote> getRequiredSum(int reqSum, Banknote one, Banknote five, Banknote ten) throws BigRequestSumException {
-        var numbersOfTenBanknotes = 0;
-        var numbersOfFiveBanknotes = 0;
-        var numbersOfOneBanknotes = 0;
+        Map<String, Integer> numbersOfBanknotesMap = new HashMap<>();
+        int numbersOfOneBanknotes;
         var reqSumForClient = reqSum;
         List<Banknote> banknotesListForCache = new LinkedList<>();
 
@@ -37,14 +38,16 @@ public class AtmRub implements Atm{
         }
 
         var numberTenBanknotes = reqSumForClient / ten.getNominal();
-        numbersOfTenBanknotes = getBanknotes(numberTenBanknotes, numberOneBanknotesInAtm);
+        numbersOfBanknotesMap.put("numbersOfTenBanknotes", getBanknotes(numberTenBanknotes, numberOneBanknotesInAtm));
+        var numbersOfTenBanknotes = numbersOfBanknotesMap.get("numbersOfTenBanknotes");
         if (numbersOfTenBanknotes == numberTenBanknotesInAtm) {
             numberTenBanknotesInAtm = 0;
         }
         reqSumForClient = reqSumForClient - numbersOfTenBanknotes * ten.getNominal();
 
         var numberFiveBanknotesForCache = reqSumForClient / five.getNominal();
-        numbersOfFiveBanknotes = getBanknotes(numberFiveBanknotesForCache, numberFiveBanknotesInAtm);
+        numbersOfBanknotesMap.put("numbersOfFiveBanknotes", getBanknotes(numberFiveBanknotesForCache, numberFiveBanknotesInAtm));
+        var numbersOfFiveBanknotes = numbersOfBanknotesMap.get("numbersOfFiveBanknotes");
         if (numbersOfFiveBanknotes == numberFiveBanknotesInAtm) {
             numberFiveBanknotesInAtm = 0;
         }
@@ -55,7 +58,8 @@ public class AtmRub implements Atm{
             throw new BigRequestSumException("Req sum is veri big. There are not enough banknotes. Atm has ten: "
                     + numberTenBanknotesInAtm + ", five: " + numberFiveBanknotesInAtm + ", one: " + numberOneBanknotesInAtm);
         } else {
-            numbersOfOneBanknotes = numberOneBanknotesForCache;
+            numbersOfBanknotesMap.put("numbersOfOneBanknotes", numberOneBanknotesForCache);
+            numbersOfOneBanknotes = numbersOfBanknotesMap.get("numbersOfOneBanknotes");
             numberOneBanknotesInAtm = numberOneBanknotesInAtm - numbersOfOneBanknotes;
             totalAmount = totalAmount - reqSum;
         }
