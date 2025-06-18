@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 public class ResourcesFileLoader implements Loader {
 
     private final  List<Measurement> measurements;
@@ -21,10 +23,12 @@ public class ResourcesFileLoader implements Loader {
 
     public ResourcesFileLoader(String fileName) throws FileProcessException {
         try (var resourceAsStream = ResourcesFileLoader.class.getClassLoader().getResourceAsStream(fileName)) {
-            String resource = new BufferedReader(new InputStreamReader(
-                    resourceAsStream, StandardCharsets.UTF_8))
-                    .lines().collect(Collectors.joining(System.lineSeparator()));
-            this.measurements = new Gson().fromJson(resource, LIST_TYPE_MEASUREMENT);
+            if (nonNull(resourceAsStream)) {
+                String resource = new BufferedReader(new InputStreamReader(
+                        resourceAsStream, StandardCharsets.UTF_8))
+                        .lines().collect(Collectors.joining(System.lineSeparator()));
+                this.measurements = new Gson().fromJson(resource, LIST_TYPE_MEASUREMENT);
+            } else throw new RuntimeException();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
