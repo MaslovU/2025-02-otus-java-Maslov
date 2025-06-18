@@ -6,6 +6,7 @@ include("L08-gc")
 include("L10-aop")
 include("L12-solid")
 include("L15-structuralPatterns")
+include("L16-serialization")
 
 pluginManagement {
     val jgitver: String by settings
