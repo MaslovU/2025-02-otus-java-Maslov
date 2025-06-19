@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":L18-jdbc"))
 
     implementation("ch.qos.logback:logback-classic")
     implementation("org.flywaydb:flyway-core")
