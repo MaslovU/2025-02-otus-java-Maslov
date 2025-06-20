@@ -11,8 +11,6 @@ public class Banknote {
     @Getter
     private int amountByBanknotes;
 
-    public Banknote() {}
-
     public int getNominal() {
         return nominal.getValue();
     }
