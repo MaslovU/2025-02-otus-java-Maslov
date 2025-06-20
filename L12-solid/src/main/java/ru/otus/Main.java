@@ -21,7 +21,7 @@ public class Main {
         System.out.println("Atm has total sum: " + atm.getTotal());
 
         try {
-            sum = atm.getRequiredSum(51, one, five, ten);
+            sum = atm.getRequiredSum(21, one, five, ten);
             System.out.println("Got banknotes: one rub " + sum.get(0).getAmountByBanknotes()
                     + ", five rubs " + sum.get(1).getAmountByBanknotes()
                     + ", ten rubs " + sum.get(2).getAmountByBanknotes());

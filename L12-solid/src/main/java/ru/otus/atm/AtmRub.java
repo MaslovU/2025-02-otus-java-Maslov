@@ -13,18 +13,16 @@ import static ru.otus.atm.Nominal.*;
 public class AtmRub implements Atm{
 
     private int totalAmount;
-    private int numberOneBanknotesInAtm;
-    private int numberFiveBanknotesInAtm;
-    private int numberTenBanknotesInAtm;
+    private final Map<Integer, Integer> nominalMap = new HashMap<>();
 
     public void putAmount(Banknote one, Banknote five, Banknote ten) {
-        numberOneBanknotesInAtm = one.getAmountByBanknotes();
-        numberFiveBanknotesInAtm = five.getAmountByBanknotes();
-        numberTenBanknotesInAtm = ten.getAmountByBanknotes();
+        nominalMap.put(1, one.getAmountByBanknotes());
+        nominalMap.put(5, five.getAmountByBanknotes());
+        nominalMap.put(10, ten.getAmountByBanknotes());
 
-        totalAmount = numberOneBanknotesInAtm * one.getNominal()
-                + numberFiveBanknotesInAtm * five.getNominal()
-                + numberTenBanknotesInAtm * ten.getNominal();
+        totalAmount = nominalMap.get(1) * one.getNominal()
+                + nominalMap.get(5) * five.getNominal()
+                + nominalMap.get(10) * ten.getNominal();
     }
 
     public List<Banknote> getRequiredSum(int reqSum, Banknote one, Banknote five, Banknote ten) throws BigRequestSumException {
@@ -38,29 +36,29 @@ public class AtmRub implements Atm{
         }
 
         var numberTenBanknotes = reqSumForClient / ten.getNominal();
-        numbersOfBanknotesMap.put("numbersOfTenBanknotes", getBanknotes(numberTenBanknotes, numberOneBanknotesInAtm));
+        numbersOfBanknotesMap.put("numbersOfTenBanknotes", getBanknotes(numberTenBanknotes, nominalMap.get(10)));
         var numbersOfTenBanknotes = numbersOfBanknotesMap.get("numbersOfTenBanknotes");
-        if (numbersOfTenBanknotes == numberTenBanknotesInAtm) {
-            numberTenBanknotesInAtm = 0;
+        if (numbersOfTenBanknotes.equals(nominalMap.get(10))) {
+            nominalMap.put(10, 0);
         }
         reqSumForClient = reqSumForClient - numbersOfTenBanknotes * ten.getNominal();
 
         var numberFiveBanknotesForCache = reqSumForClient / five.getNominal();
-        numbersOfBanknotesMap.put("numbersOfFiveBanknotes", getBanknotes(numberFiveBanknotesForCache, numberFiveBanknotesInAtm));
+        numbersOfBanknotesMap.put("numbersOfFiveBanknotes", getBanknotes(numberFiveBanknotesForCache, nominalMap.get(5)));
         var numbersOfFiveBanknotes = numbersOfBanknotesMap.get("numbersOfFiveBanknotes");
-        if (numbersOfFiveBanknotes == numberFiveBanknotesInAtm) {
-            numberFiveBanknotesInAtm = 0;
+        if (numbersOfFiveBanknotes.equals(nominalMap.get(5))) {
+            nominalMap.put(5, 0);
         }
         reqSumForClient = reqSumForClient - numbersOfFiveBanknotes * five.getNominal();
 
         var numberOneBanknotesForCache = reqSumForClient / one.getNominal();
-        if (numberOneBanknotesForCache > numberOneBanknotesInAtm) {
+        if (numberOneBanknotesForCache > nominalMap.get(1)) {
             throw new BigRequestSumException("Req sum is veri big. There are not enough banknotes. Atm has ten: "
-                    + numberTenBanknotesInAtm + ", five: " + numberFiveBanknotesInAtm + ", one: " + numberOneBanknotesInAtm);
+                    + nominalMap.get(10) + ", five: " + nominalMap.get(5) + ", one: " + nominalMap.get(1));
         } else {
             numbersOfBanknotesMap.put("numbersOfOneBanknotes", numberOneBanknotesForCache);
             numbersOfOneBanknotes = numbersOfBanknotesMap.get("numbersOfOneBanknotes");
-            numberOneBanknotesInAtm = numberOneBanknotesInAtm - numbersOfOneBanknotes;
+            nominalMap.put(1, nominalMap.get(1) - numbersOfOneBanknotes);
             totalAmount = totalAmount - reqSum;
         }
 
