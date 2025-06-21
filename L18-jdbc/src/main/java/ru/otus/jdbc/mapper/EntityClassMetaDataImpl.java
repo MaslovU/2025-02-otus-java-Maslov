@@ -24,6 +24,7 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
         defineClassName(entityClass);
         defineFields(entityClass);
         defineClassConstructor(entityClass);
+        defineAllFields(entityClass);
     }
 
     private void defineClassName(final Class<T> entityClass) {
@@ -49,6 +50,12 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
                 .findAny().orElseThrow(() -> new RuntimeException("Can't define correct persistence constructor"));
     }
 
+    private void defineAllFields(final Class<T> entityClass) {
+        allFields = new ArrayList<>();
+        allFields.addAll(nonIdFields);
+        allFields.add(idMarkedField);
+    }
+
     @Override
     public String getName() {
         return entityClassName;
@@ -66,8 +73,6 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
     @Override
     public List<Field> getAllFields() {
-        this.allFields.addAll(nonIdFields);
-        this.allFields.add(idMarkedField);
         return allFields;
     }
 
