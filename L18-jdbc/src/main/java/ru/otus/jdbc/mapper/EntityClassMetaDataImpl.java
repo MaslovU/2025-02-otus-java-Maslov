@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -14,6 +15,7 @@ import static java.util.Objects.requireNonNull;
 public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
     private String entityClassName;
     private Constructor<?> constructor;
+    private List<Field> allFields;
     private List<Field> nonIdFields;
     private Field idMarkedField;
 
@@ -33,7 +35,7 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
         idMarkedField = stream(declaredFields)
                 .filter(f -> f.isAnnotationPresent(Id.class))
-                .findAny().orElseThrow(() -> new RuntimeException("d"));
+                .findAny().orElseThrow(() -> new RuntimeException("No fields marked as Id"));
 
         nonIdFields = stream(declaredFields)
                 .filter(f -> !f.isAnnotationPresent(Id.class))
@@ -64,8 +66,8 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
     @Override
     public List<Field> getAllFields() {
-        List<Field> allFields = new ArrayList<>(nonIdFields);
-        allFields.add(idMarkedField);
+        this.allFields.addAll(nonIdFields);
+        this.allFields.add(idMarkedField);
         return allFields;
     }
 
