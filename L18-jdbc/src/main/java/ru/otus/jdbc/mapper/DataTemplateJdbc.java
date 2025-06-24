@@ -1,5 +1,7 @@
 package ru.otus.jdbc.mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.otus.core.repository.DataTemplate;
 import ru.otus.core.repository.executor.DbExecutor;
 import ru.otus.exceptions.DataBaseOperationException;
@@ -19,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 @SuppressWarnings("java:S1068")
 public class DataTemplateJdbc<T> implements DataTemplate<T> {
 
+    private static final Logger log = LoggerFactory.getLogger(DataTemplateJdbc.class);
     private final DbExecutor dbExecutor;
     private final EntitySQLMetaData entitySQLMetaData;
     private final EntityClassMetaData<T> entityClassMetaData;
@@ -101,6 +104,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
         try {
             return entityClassMetaData.getConstructor().newInstance(entityFields.toArray());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            log.error("Got InstantiationException | IllegalAccessException | InvocationTargetException");
             throw new RuntimeException(e.getMessage());
         }
     }
