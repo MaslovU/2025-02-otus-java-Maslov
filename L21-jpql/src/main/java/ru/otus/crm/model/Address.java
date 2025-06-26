@@ -1,33 +1,39 @@
 package ru.otus.crm.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "address")
-public class Address implements Cloneable{
+public class Address {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "street")
     private String street;
 
-    public Address() {}
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "client_id")
+    private Client client;
 
     public Address(Long id, String street) {
         this.id = id;
         this.street = street;
-    }
-
-    @Override
-    public Address clone() {
-        return new Address(this.id, this.street);
     }
 }

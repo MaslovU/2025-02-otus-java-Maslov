@@ -6,40 +6,35 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "client")
 public class Client implements Cloneable {
 
     @Id
-    @SequenceGenerator(name = "client_gen", sequenceName = "client_seq", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_gen")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
+    @OneToOne(optional = false, mappedBy = "client")
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
     private List<Phone> phones;
-
-    public Client() {
-    }
 
     public Client(String name) {
         this.id = null;
@@ -56,6 +51,7 @@ public class Client implements Cloneable {
         this.name = name;
         this.address = address;
         this.phones = phones;
+        this.phones.forEach(p -> p.setClient(this));
     }
 
     @Override

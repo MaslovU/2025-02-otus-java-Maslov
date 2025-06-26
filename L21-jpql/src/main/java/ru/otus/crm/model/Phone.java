@@ -6,24 +6,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "phone")
-public class Phone implements Cloneable{
+@Getter
+@Setter
+@NoArgsConstructor
+public class Phone {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "number")
     private String number;
 
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
-
-    public Phone() {}
 
     public Phone(Long id, String number) {
         this.id = id;
@@ -34,10 +41,5 @@ public class Phone implements Cloneable{
         this.id = id;
         this.number = number;
         this.client = client;
-    }
-
-    @Override
-    protected Object clone() {
-        return new Phone(this.id, this.number);
     }
 }

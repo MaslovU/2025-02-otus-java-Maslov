@@ -1,7 +1,3 @@
-plugins {
-    id("java")
-}
-
 dependencies {
     implementation ("org.projectlombok:lombok")
     annotationProcessor ("org.projectlombok:lombok")
@@ -9,6 +5,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic")
     implementation("org.hibernate.orm:hibernate-core")
     implementation("org.flywaydb:flyway-core")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
     implementation("org.postgresql:postgresql")
 
@@ -20,8 +17,4 @@ dependencies {
 
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
