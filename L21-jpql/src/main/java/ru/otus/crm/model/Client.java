@@ -31,7 +31,6 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "address")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
