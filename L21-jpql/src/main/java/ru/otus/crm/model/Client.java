@@ -30,7 +30,7 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(optional = false, mappedBy = "client")
+    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "client")
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
