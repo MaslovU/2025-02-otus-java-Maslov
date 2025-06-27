@@ -1,6 +1,5 @@
 package ru.otus.crm.service;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.base.AbstractHibernateTest;
@@ -24,8 +23,8 @@ class DbServiceClientTest extends AbstractHibernateTest {
         // Это надо раскомментировать, у выполненного ДЗ, все тесты должны проходить
         // Кроме удаления комментирования, тестовый класс менять нельзя
 
-                var client = new Client(null, "Vasya", new Address(null, "AnyStreet"),
-                        List.of(new Phone(null, "13-555-22"),
+        var client = new Client(null, "Vasya", new Address(null, "AnyStreet"),
+                List.of(new Phone(null, "13-555-22"),
                         new Phone(null, "14-666-333")));
 
 
