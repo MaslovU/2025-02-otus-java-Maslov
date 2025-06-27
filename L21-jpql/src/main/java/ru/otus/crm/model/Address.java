@@ -21,7 +21,8 @@ public class Address {
     @Column(name = "street")
     private String street;
 
-    @OneToOne
+    @OneToOne(optional = false)
+    @PrimaryKeyJoinColumn
     private Client client;
 
     public Address(Long id, String street) {

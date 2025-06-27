@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,7 +25,8 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "client", targetEntity = Address.class, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "client", optional = false)
+    @JoinColumn(unique = true)
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
@@ -44,13 +47,31 @@ public class Client implements Cloneable {
         this.name = name;
         this.address = address;
         this.phones = phones;
-        this.address.setClient(this);
-        this.phones.forEach(p -> p.setClient(this));
+
+        if (this.address != null) {
+            this.address.setClient(this);
+        }
+        if (nonNull(this.phones)) {
+            this.phones.forEach(p -> p.setClient(this));
+        }
     }
 
     @Override
     public Client clone() {
-        return new Client(this.id, this.name, this.address, this.phones);
+        Address newAddress = null;
+        List<Phone> newPhones = null;
+
+        if (nonNull(this.address)) {
+            newAddress = new Address(this.address.getId(), this.address.getStreet());
+        }
+
+        if (nonNull(this.phones)) {
+            newPhones = this.phones.stream()
+                    .map(p -> new Phone(p.getId(), p.getNumber()))
+                    .toList();
+        }
+
+        return new Client(this.id, this.name, newAddress, newPhones);
     }
 
     @Override
