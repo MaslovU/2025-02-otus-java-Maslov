@@ -23,7 +23,7 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "client")
+    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "client", targetEntity = Address.class, fetch = FetchType.EAGER)
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
@@ -44,6 +44,7 @@ public class Client implements Cloneable {
         this.name = name;
         this.address = address;
         this.phones = phones;
+        this.address.setClient(this);
         this.phones.forEach(p -> p.setClient(this));
     }
 
