@@ -35,4 +35,9 @@ public class Phone {
         this.number = number;
         this.client = client;
     }
+
+    @Override
+    protected Phone clone() {
+        return new Phone(this.id, this.number);
+    }
 }
