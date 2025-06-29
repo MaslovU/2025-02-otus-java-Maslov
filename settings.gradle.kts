@@ -8,6 +8,7 @@ include("L12-solid")
 include("L15-structuralPatterns")
 include("L16-serialization")
 include("L18-jdbc")
+include("L21-jpql")
 
 pluginManagement {
     val jgitver: String by settings
