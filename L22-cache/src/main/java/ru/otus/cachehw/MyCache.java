@@ -15,24 +15,10 @@ public class MyCache<K, V> implements HwCache<K, V> {
     private final Map<K, V> cache = new WeakHashMap<>();
     private final List<HwListener<K, V>> listeners = new ArrayList<>();
 
-    private final int cacheCapacity;
-
-    public MyCache() {
-        cacheCapacity = 100;
-    }
-
-    public MyCache(int cacheCapacity) {
-        this.cacheCapacity = cacheCapacity;
-    }
 
     @Override
     public void put(K key, V value) {
         log.info("Save to cache: key {} value {}", key, value);
-
-        if (cacheCapacity <= cache.size()) {
-            cache.clear();
-            log.info("clear cache");
-        }
 
         cache.put(key, value);
         notifyListeners(key, value, "PUT");

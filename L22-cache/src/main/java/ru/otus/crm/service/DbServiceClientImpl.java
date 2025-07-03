@@ -17,11 +17,11 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
-    private final HwCache<Long, Client> cache;
+    private final HwCache<String, Client> cache;
 
     public DbServiceClientImpl(TransactionManager transactionManager,
                                DataTemplate<Client> clientDataTemplate,
-                               HwCache<Long, Client> cache) {
+                               HwCache<String, Client> cache) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
         this.cache = cache;
@@ -33,12 +33,12 @@ public class DbServiceClientImpl implements DBServiceClient {
             var clientCloned = client.clone();
             if (client.getId() == null) {
                 var savedClient = clientDataTemplate.insert(session, clientCloned);
-                cache.put(savedClient.getId(), savedClient);
+                cache.put(savedClient.getId().toString(), savedClient);
                 log.info("created client: {}", clientCloned);
                 return savedClient;
             }
             var savedClient = clientDataTemplate.update(session, clientCloned);
-            cache.put(savedClient.getId(), savedClient);
+            cache.put(savedClient.getId().toString(), savedClient);
             log.info("updated client: {}", savedClient);
             return savedClient;
         });

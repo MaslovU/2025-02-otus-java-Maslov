@@ -35,13 +35,13 @@ public class DbServiceDemo {
         ///
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
         ///
-        HwListener<Long, Client> listener = new HwListener<Long, Client>() {
+        HwListener<String, Client> listener = new HwListener<String, Client>() {
             @Override
-            public void notify(Long key, Client value, String action) {
+            public void notify(String key, Client value, String action) {
                 log.info("New Listener: key: {}, value: {}, action: {}", key, value, action);
             }
         };
-        MyCache<Long, Client> cache = new MyCache<>(1);
+        MyCache<String, Client> cache = new MyCache<>(1);
         cache.addListener(listener);
         ///
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate, cache);
