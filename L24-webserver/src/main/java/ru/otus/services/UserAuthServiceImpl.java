@@ -1,12 +1,12 @@
 package ru.otus.services;
 
-import ru.otus.dao.UserDao;
+import ru.otus.crm.service.DbServiceAppUserImpl;
 
 public class UserAuthServiceImpl implements UserAuthService {
 
-    private final UserDao userDao;
+    private final DbServiceAppUserImpl userDao;
 
-    public UserAuthServiceImpl(UserDao userDao) {
+    public UserAuthServiceImpl(DbServiceAppUserImpl userDao) {
         this.userDao = userDao;
     }
 

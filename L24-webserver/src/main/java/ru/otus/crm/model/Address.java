@@ -2,6 +2,7 @@ package ru.otus.crm.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,19 +21,28 @@ import lombok.Setter;
 public class Address {
 
     @Id
-    @SequenceGenerator(name = "street_gen", sequenceName = "street_seq", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "street_gen")
+    @SequenceGenerator(name = "address_gen", sequenceName = "address_seq", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_gen")
     @Column(name = "id")
     private Long id;
 
     @Column(name = "street")
     private String street;
 
-    @OneToOne
+    @OneToOne(mappedBy = "address")
     private Client client;
 
     public Address(Long id, String street) {
         this.id = id;
         this.street = street;
+    }
+
+    public Address(String street) {
+        this(null, street);
+    }
+
+    @Override
+    protected Address clone() {
+        return new Address(this.id, this.street);
     }
 }

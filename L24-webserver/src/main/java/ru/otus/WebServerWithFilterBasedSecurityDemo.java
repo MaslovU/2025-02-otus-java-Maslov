@@ -8,11 +8,11 @@ import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
 import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
 import ru.otus.crm.model.Address;
+import ru.otus.crm.model.AppUser;
 import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Phone;
+import ru.otus.crm.service.DbServiceAppUserImpl;
 import ru.otus.crm.service.DbServiceClientImpl;
-import ru.otus.dao.InMemoryUserDao;
-import ru.otus.dao.UserDao;
 import ru.otus.server.UsersWebServer;
 import ru.otus.server.UsersWebServerWithFilterBasedSecurity;
 import ru.otus.services.TemplateProcessor;
@@ -33,31 +33,50 @@ import ru.otus.services.UserAuthServiceImpl;
     http://localhost:8080/api/user/3
 */
 public class WebServerWithFilterBasedSecurityDemo {
+
+    public static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
     private static final int WEB_SERVER_PORT = 8080;
     private static final String TEMPLATES_DIR = "/templates/";
-    public static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
 
     public static void main(String[] args) throws Exception {
-        UserDao userDao = new InMemoryUserDao();
-        Configuration configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
-        var dbUrl = configuration.getProperty("hibernate.connection.url");
-        var dbUserName = configuration.getProperty("hibernate.connection.username");
-        var dbPassword = configuration.getProperty("hibernate.connection.password");
-        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-        TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
-        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Phone.class,
-                Address.class);
-        var transactionManager = new TransactionManagerHibernate(sessionFactory);
+
+        var configuration = new Configuration().configure(HIBERNATE_CFG_FILE);
+        executeMigration(configuration);
+        var transactionManager = createTransactionManager(configuration);
+
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
         var dbServiceClient = new DbServiceClientImpl(transactionManager, clientTemplate);
-        UserAuthService authService = new UserAuthServiceImpl(userDao);
 
-        new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
+        var appUserTemplate = new DataTemplateHibernate<>(AppUser.class);
+        var dbServiceAppUser = new DbServiceAppUserImpl(transactionManager, appUserTemplate);
 
-        UsersWebServer usersWebServer = new UsersWebServerWithFilterBasedSecurity(
-                WEB_SERVER_PORT, authService, gson, templateProcessor, dbServiceClient);
+        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+        TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
+        UserAuthService authService = new UserAuthServiceImpl(dbServiceAppUser);
+
+        UsersWebServer usersWebServer = new UsersWebServerWithFilterBasedSecurity(WEB_SERVER_PORT, authService, gson, templateProcessor, dbServiceClient);
 
         usersWebServer.start();
         usersWebServer.join();
     }
+
+    private static TransactionManagerHibernate createTransactionManager(Configuration configuration) {
+        var dbUrl = configuration.getProperty("hibernate.connection.url");
+        var dbUserName = configuration.getProperty("hibernate.connection.username");
+        var dbPassword = configuration.getProperty("hibernate.connection.password");
+
+        new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
+
+        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Address.class, Phone.class, AppUser.class);
+
+        return new TransactionManagerHibernate(sessionFactory);
+    }
+
+    public static void executeMigration(Configuration configuration) {
+        var dbUrl = configuration.getProperty("hibernate.connection.url");
+        var dbUserName = configuration.getProperty("hibernate.connection.username");
+        var dbPassword = configuration.getProperty("hibernate.connection.password");
+        new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
+    }
+
 }

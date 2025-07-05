@@ -3,9 +3,11 @@ package ru.otus.crm.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -13,7 +15,11 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
@@ -34,54 +40,35 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "client")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
-    private List<Phone> phones;
-
-    public Client(String name) {
-        this.id = null;
-        this.name = name;
-    }
-
-    public Client(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "client")
+    @Fetch(FetchMode.SELECT)
+    private List<Phone> phones = new ArrayList<>();
 
     public Client(Long id, String name, Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;
-        this.address = address;
+        this.addAddress(address);
         this.addPhones(phones);
-
-        if (this.address != null) {
-            this.address.setClient(this);
-        }
     }
 
-    @Override
-    public Client clone() {
-        Address newAddress = null;
-        List<Phone> newPhones = null;
-
-        if (nonNull(this.address)) {
-            newAddress = new Address(this.address.getId(), this.address.getStreet());
-        }
-
-        if (nonNull(this.phones)) {
-            newPhones = this.phones.stream()
-                    .map(p -> new Phone(p.getId(), p.getNumber()))
-                    .toList();
-        }
-
-        return new Client(this.id, this.name, newAddress, newPhones);
+    public Client(Long id, String name) {
+        this(id, name, null, Collections.emptyList());
     }
 
-    @Override
-    public String toString() {
-        return "Client{" + "id=" + id + ", name='" + name + '\'' + ", address=" + address + ", phones=" + phones + "}";
+    public Client(String name) {
+        this(null, name, null, Collections.emptyList());
+    }
+
+    public void addAddress(Address address) {
+        if (address != null) {
+            var cloneAddress = address.clone();
+            cloneAddress.setClient(this);
+            this.address = cloneAddress;
+        }
     }
 
     public void addPhone(Phone phone) {
@@ -92,5 +79,28 @@ public class Client implements Cloneable {
 
     public void addPhones(List<Phone> phone) {
         phone.forEach(this::addPhone);
+    }
+
+    @Override
+    public Client clone() {
+        var copyOfClient = new Client(this.id, this.name);
+        phones.forEach(phone -> cloneAndLinkWithClient(phone, copyOfClient));
+        if (nonNull(address)) {
+            var copyOfAddress = address.clone();
+            copyOfClient.addAddress(copyOfAddress);
+        }
+        return copyOfClient;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" + "id=" + id + ", name='" + name + '\'' + '}';
+    }
+
+
+    private void cloneAndLinkWithClient(Phone phone, Client client) {
+        var copyOfPhone = phone.clone();
+        client.phones.add(copyOfPhone);
+        copyOfPhone.setClient(client);
     }
 }
