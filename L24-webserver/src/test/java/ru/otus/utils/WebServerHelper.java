@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public final class WebServerHelper {
 
@@ -41,7 +42,12 @@ public final class WebServerHelper {
         if (response.statusCode() == HttpURLConnection.HTTP_OK) {
             List<HttpCookie> cookies = http.cookieHandler()
                     .map(h -> (CookieManager)h)
-                    .map(m -> m.getCookieStore().getCookies()).orElseGet(ArrayList::new);
+                    .map(m -> m.getCookieStore().getCookies()).orElseGet(new Supplier<List<HttpCookie>>() {
+                        @Override
+                        public List<HttpCookie> get() {
+                            return List.of();
+                        }
+                    });
             return cookies.stream().filter(c -> c.getName().equalsIgnoreCase(COOKIE_NAME_JSESSIONID)).findFirst().orElse(null);
         }
         return null;
