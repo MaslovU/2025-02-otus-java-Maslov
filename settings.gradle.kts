@@ -10,6 +10,7 @@ include("L16-serialization")
 include("L18-jdbc")
 include("L21-jpql")
 include("L22-cache")
+include("L24-webserver")
 include("L25-di")
 
 pluginManagement {
