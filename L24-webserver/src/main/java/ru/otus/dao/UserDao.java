@@ -1,6 +1,5 @@
 package ru.otus.dao;
 
-
 import ru.otus.model.User;
 
 import java.util.Optional;
