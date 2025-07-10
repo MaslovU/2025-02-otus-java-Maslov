@@ -15,7 +15,6 @@ import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class LoginServlet extends HttpServlet {
 
     private static final String PARAM_LOGIN = "login";
-    private static final String PARAM_ADMIN = "admin";
     private static final String PARAM_PASSWORD = "password";
     private static final int MAX_INACTIVE_INTERVAL = 30;
     private static final String LOGIN_PAGE_TEMPLATE = "login.html";

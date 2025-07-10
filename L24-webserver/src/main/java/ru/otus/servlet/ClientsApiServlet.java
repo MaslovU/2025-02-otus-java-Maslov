@@ -1,7 +1,6 @@
 package ru.otus.servlet;
 
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,9 +20,16 @@ public class ClientsApiServlet extends HttpServlet {
     private final DBServiceClient dbServiceClient;
     private final transient Gson gson;
 
+    private static final String REDIRECT_PAGE = "/clients";
+
     public ClientsApiServlet(DBServiceClient dbServiceClient, Gson gson) {
         this.dbServiceClient = dbServiceClient;
         this.gson = gson;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {
+        response.sendRedirect(REDIRECT_PAGE);
     }
 
     @Override
@@ -47,8 +53,7 @@ public class ClientsApiServlet extends HttpServlet {
 
         final Address address = new Address(null, street);
         final Phone phone = new Phone(null, number);
-        final Client newClient = new Client(null, name, address, List.of(phone));
 
-        return newClient;
+        return new Client(null, name, address, List.of(phone));
     }
 }
