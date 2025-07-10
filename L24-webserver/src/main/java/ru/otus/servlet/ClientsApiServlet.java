@@ -16,9 +16,9 @@ import ru.otus.model.ClientRequest;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings({"java:S1989"})
 public class ClientsApiServlet extends HttpServlet {
-
-    private final transient DBServiceClient dbServiceClient;
+    private final DBServiceClient dbServiceClient;
     private final transient Gson gson;
 
     public ClientsApiServlet(DBServiceClient dbServiceClient, Gson gson) {
@@ -27,14 +27,14 @@ public class ClientsApiServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        final Client client = extractClient(req);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final Client client = extractClient(request);
         final Client newClient = dbServiceClient.saveClient(client);
 
-        resp.setContentType("application/json; charset=UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
-        final ServletOutputStream outputStream = resp.getOutputStream();
-        outputStream.print(gson.toJson(newClient.getId()));
+        final ServletOutputStream out = response.getOutputStream();
+        out.print(gson.toJson(newClient.getId()));
     }
 
     private static Client extractClient(HttpServletRequest request) throws IOException {
@@ -42,12 +42,13 @@ public class ClientsApiServlet extends HttpServlet {
         final ClientRequest clientRequest = mapper.readValue(request.getInputStream(), ClientRequest.class);
 
         final String name = clientRequest.name();
-        final String addressStr = clientRequest.address();
-        final String phoneStr = clientRequest.phone();
+        final String street = clientRequest.address();
+        final String number = clientRequest.phone();
 
-        final Address address = new Address(null, addressStr);
-        final Phone phone = new Phone(null, phoneStr);
+        final Address address = new Address(null, street);
+        final Phone phone = new Phone(null, number);
+        final Client newClient = new Client(null, name, address, List.of(phone));
 
-        return new Client(null, name, address, List.of(phone));
+        return newClient;
     }
 }

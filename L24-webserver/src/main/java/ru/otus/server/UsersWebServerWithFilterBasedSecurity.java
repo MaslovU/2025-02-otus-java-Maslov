@@ -8,6 +8,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import ru.otus.crm.service.DBServiceClient;
+import ru.otus.crm.service.DbServiceClientImpl;
 import ru.otus.helpers.FileSystemHelper;
 import ru.otus.services.TemplateProcessor;
 import ru.otus.services.UserAuthService;
@@ -19,26 +20,26 @@ import ru.otus.servlet.LoginServlet;
 import java.util.Arrays;
 
 public class UsersWebServerWithFilterBasedSecurity implements UsersWebServer {
-
     private final UserAuthService authService;
-    private final TemplateProcessor templateProcessor;
-    private final Server server;
-    private final Gson gson;
-    private final DBServiceClient dbServiceClient;
 
+    private static final String START_PAGE_NAME = "index.html";
+    private static final String COMMON_RESOURCES_DIR = "static";
+    private static final String LOGIN_PAGE = "/login";
     private static final String CLIENTS_PAGE = "/clients";
-    private static final String START_WELCOME_PAGE = "index.html";
-    private static final String COMMON_RESOURCE_DIR = "static";
     private static final String CLIENTS_API = "/api/clients/*";
 
+    private final Gson gson;
+    protected final TemplateProcessor templateProcessor;
+    private final Server server;
+    private final DBServiceClient dbServiceClient;
+
     public UsersWebServerWithFilterBasedSecurity(
-            int port, UserAuthService authService, Gson gson,
-            TemplateProcessor templateProcessor,
-            DBServiceClient dbServiceClient) {
-        this.authService = authService;
+            int port, UserAuthService authService, Gson gson, TemplateProcessor templateProcessor,
+            DbServiceClientImpl dbServiceClient) {
+        this.gson = gson;
         this.templateProcessor = templateProcessor;
         server = new Server(port);
-        this.gson = gson;
+        this.authService = authService;
         this.dbServiceClient = dbServiceClient;
     }
 
@@ -61,13 +62,12 @@ public class UsersWebServerWithFilterBasedSecurity implements UsersWebServer {
     }
 
     protected Handler applySecurity(ServletContextHandler servletContextHandler, String... paths) {
-        servletContextHandler.addServlet(new ServletHolder(
-                new LoginServlet(templateProcessor, authService)), "/login");
+        servletContextHandler.addServlet(new ServletHolder(new LoginServlet(templateProcessor, authService)), LOGIN_PAGE);
         AuthorizationFilter authorizationFilter = new AuthorizationFilter();
         Arrays.stream(paths)
                 .forEachOrdered(
-                        path -> servletContextHandler.addFilter(
-                                new FilterHolder(authorizationFilter), path, null));
+                        path -> servletContextHandler.addFilter(new FilterHolder(authorizationFilter), path, null));
+
         return servletContextHandler;
     }
 
@@ -84,20 +84,17 @@ public class UsersWebServerWithFilterBasedSecurity implements UsersWebServer {
 
     private ResourceHandler createResourceHandler() {
         ResourceHandler resourceHandler = new ResourceHandler();
-
         resourceHandler.setDirAllowed(false);
-        resourceHandler.setWelcomeFiles(START_WELCOME_PAGE);
+        resourceHandler.setWelcomeFiles(START_PAGE_NAME);
         resourceHandler.setBaseResourceAsString(
-                FileSystemHelper.localFileNameOrResourceNameToFullPath(COMMON_RESOURCE_DIR));
+                FileSystemHelper.localFileNameOrResourceNameToFullPath(COMMON_RESOURCES_DIR));
 
         return resourceHandler;
     }
 
     private ServletContextHandler createServletContextHandler() {
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-
-        servletContextHandler.addServlet(new ServletHolder(
-                new ClientsServlet(templateProcessor, dbServiceClient)), "/clients/*");
+        servletContextHandler.addServlet(new ServletHolder(new ClientsServlet(templateProcessor, dbServiceClient)), "/clients/*");
         servletContextHandler.addServlet(new ServletHolder(new ClientsApiServlet(dbServiceClient, gson)), CLIENTS_API);
 
         return servletContextHandler;
